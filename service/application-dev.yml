@@ -1,0 +1,13 @@
+api-module: orchestration
+base:
+  application:
+    name: isc-capc-service
+    version: 1.0.0
+  swagger:
+    enable: true
+  endpoint:
+    health:
+      enable: true
+  server:
+    enable: true
+    port: 38300

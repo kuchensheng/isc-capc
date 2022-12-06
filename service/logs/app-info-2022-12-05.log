@@ -1,0 +1,2 @@
+[2022-12-05 21:35:37.634] [isc-capc-service] [] [] [info] D:/worksapace/go/pkg/mod/github.com/isyscore/isc-gobase@v1.4.8/server/server.go:207 开始启动服务
+[2022-12-05 21:35:37.634] [isc-capc-service] [] [] [info] D:/worksapace/go/pkg/mod/github.com/isyscore/isc-gobase@v1.4.8/server/server.go:209 服务端口号: 38300

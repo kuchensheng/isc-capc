@@ -1,0 +1,2 @@
+[2022-12-06 16:57:05.414] [isc-capc-service] [] [] [warn] D:/worksapace/go/isc-capc/infrastructure/model/category/category_model.go:65 分组信息新增失败Error 1062: Duplicate entry '力涵呀17-0' for key 'uk_name'
+[2022-12-06 16:57:08.298] [isc-capc-service] [] [] [warn] D:/worksapace/go/isc-capc/domain/category/category_domain.go:19 分组信息注册失败,{"code":2106203,"message":"无法创建/更新应用或分组信息","data":{"Number":1062,"Message":"Duplicate entry '力涵呀17-0' for key 'uk_name'"}}

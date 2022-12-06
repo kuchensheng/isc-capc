@@ -1,0 +1,10 @@
+go 1.18
+
+use (
+	./
+	./domain
+	./infrastructure
+	./service
+	./transfer
+	./util
+)
