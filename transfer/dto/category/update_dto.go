@@ -49,7 +49,7 @@ func (dto *CategoryDTO) Check() error {
 	return nil
 }
 
-func (dto *CategoryDTO) Dto2Do() *category.IscCapcCategory {
+func (dto CategoryDTO) Dto2Do() *category.IscCapcCategory {
 	data, _ := json.Marshal(dto)
 	model := &category.IscCapcCategory{}
 	err := json.Unmarshal(data, model)

@@ -1,24 +1,37 @@
 package connetor
 
 import (
+	"fmt"
+	"github.com/isyscore/isc-gobase/config"
+	"github.com/isyscore/isc-gobase/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 	"time"
 )
 
 type mysqlConnector struct {
 }
 
-func InitMysqlConnector() {
+func init() {
 	connector := mysqlConnector{}
-	e := connector.Open()
-	println(e)
+	if e := connector.Open(); e != nil {
+		fmt.Println(e)
+	}
 }
+
+const _DB = "%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Asia%%2FShanghai"
+
 func (connector mysqlConnector) Open() error {
-	db, err := gorm.Open(mysql.Open("isyscore:Isysc0re@tcp(10.30.30.95:23306)/isc_ecology_orchestration?parseTime=true&loc=Asia%2FShanghai"), &gorm.Config{})
+	userName := config.GetValueStringDefault("base.datasource.userName", "isyscore")
+	password := config.GetValueStringDefault("base.datasource.password", "Isysc0re")
+	host := config.GetValueString("base.datasource.host")
+	port := config.GetValueIntDefault("base.datasource.port", 3306)
+	database := config.GetValueString("base.datasource.database")
+	url := fmt.Sprintf(_DB, userName, password, host, port, database)
+	logger.Info("连接数据库:%s", url)
+	db, err := gorm.Open(mysql.Open(url), &gorm.Config{})
 	if err != nil {
-		log.Fatalln(err)
+		logger.Fatal("无法打开连接：%v", err)
 	}
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxOpenConns(5)

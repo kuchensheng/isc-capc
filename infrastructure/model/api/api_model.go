@@ -26,7 +26,7 @@ type IscCapcApiInfo struct {
 	//Type api类型，OS、NATIVE、POLYMERIC、LIGHT、UDMP、TDDM等
 	Type int `json:"type"`
 	//CategoryId 分组ID
-	CategoryId string `json:"group_id" gorm:"column:group_id"`
+	CategoryId int `json:"group_id" gorm:"column:group_id"`
 	//CategoryPath 分组全路径ID
 	CategoryPath string `json:"group_path" gorm:"column:group_path"`
 	//CategoryFullName 分组全路径名称
@@ -73,7 +73,7 @@ func (model *IscCapcApiInfo) Valid() error {
 	if len(model.Summary) == 0 {
 		return common.API_NAME_IS_NULL.Exception(nil)
 	}
-	if len(model.CategoryId) == 0 {
+	if model.CategoryId == 0 {
 		return common.API_CATEGORY_IS_NULL.Exception(nil)
 	}
 	return nil
@@ -84,7 +84,7 @@ func (model *IscCapcApiInfo) GetCapcTableName() string {
 }
 
 func (model *IscCapcApiInfo) BeforeCreate(tx *gorm.DB) error {
-	if err := model.BaseModel.BeforeUpdate(tx); err != nil {
+	if err := model.BaseModel.BeforeCreate(tx); err != nil {
 		return err
 	}
 

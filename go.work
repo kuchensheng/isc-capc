@@ -3,6 +3,7 @@ go 1.18
 use (
 	./
 	./domain
+	./embalm
 	./infrastructure
 	./service
 	./transfer

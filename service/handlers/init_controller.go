@@ -9,24 +9,20 @@ import (
 var AllHandler []InitHandler
 
 type InitHandler interface {
-	//RegisterHandler 注册处理器
-	RegisterHandler()
 	//InitView 初始化视图
 	InitView()
 }
 
-//AddHandler 注册处理器
-func AddHandler(handler InitHandler) {
+//RegisterHandler 注册处理器
+func RegisterHandler(handler InitHandler) {
 	AllHandler = append(AllHandler, handler)
 }
 
 //InitAllView 初始化所有的视图信息
 func InitAllView() {
-	categoryHandler := &categoryHandler{}
-	categoryHandler.InitView()
-
-	apiHandler := &apiHandler{}
-	apiHandler.InitView()
+	for _, handler := range AllHandler {
+		handler.InitView()
+	}
 }
 
 func handlerBusiness(context *gin.Context, handler func(context *gin.Context) (any, error)) {
@@ -37,4 +33,13 @@ func handlerBusiness(context *gin.Context, handler func(context *gin.Context) (a
 		context.JSON(http.StatusOK, common.SUCCESS.Exception(result))
 		return
 	}
+}
+
+func getTenantId(context *gin.Context) (string, error) {
+	header := context.GetHeader("token")
+	if header == "" {
+		context.JSON(http.StatusUnauthorized, common.UNKNOWN_EXCEPTION.Exception("登录校验失败"))
+		context.Abort()
+	}
+	return header, nil
 }

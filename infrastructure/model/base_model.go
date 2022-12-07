@@ -19,6 +19,10 @@ type BaseModel struct {
 	TenantId string `json:"tenant_id"`
 }
 
+func (model *BaseModel) SetTenantId(tenantId string) {
+	model.TenantId = tenantId
+}
+
 type GetTableNameInterface interface {
 	GetCapcTableName() string
 }
