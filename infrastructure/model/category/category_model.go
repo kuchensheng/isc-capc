@@ -11,7 +11,7 @@ import (
 
 const tableName = "isc_capc_category"
 
-type CategoryModel struct {
+type IscCapcCategory struct {
 	model.BaseModel `gorm:"embedded"`
 
 	//Name 分组名称
@@ -40,11 +40,11 @@ type CategoryModel struct {
 	Remark string `json:"remark"`
 }
 
-func (m *CategoryModel) GetCapcTableName() string {
+func (m *IscCapcCategory) GetCapcTableName() string {
 	return tableName
 }
 
-func (m *CategoryModel) BeforeCreate(tx *gorm.DB) error {
+func (m *IscCapcCategory) BeforeCreate(tx *gorm.DB) error {
 	if e := m.BaseModel.BeforeCreate(tx); e != nil {
 		return e
 	} else {
@@ -59,7 +59,7 @@ func (m *CategoryModel) BeforeCreate(tx *gorm.DB) error {
 }
 
 //Create 新增分组信息
-func (m *CategoryModel) Create(handler func() (bool, error)) (bool, error) {
+func (m *IscCapcCategory) Create(handler func() (bool, error)) (bool, error) {
 	result := connetor.Db.Table(m.GetCapcTableName()).Create(m)
 	if e := result.Error; e != nil {
 		log.Warn().Msgf("分组信息新增失败%v", e)
@@ -69,7 +69,7 @@ func (m *CategoryModel) Create(handler func() (bool, error)) (bool, error) {
 }
 
 //Update 根据Id修改分组信息
-func (m *CategoryModel) Update() (bool, error) {
+func (m *IscCapcCategory) Update() (bool, error) {
 	if m.ID == 0 {
 		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
 	}
@@ -83,7 +83,7 @@ func (m *CategoryModel) Update() (bool, error) {
 }
 
 //Delete 根据Id删除分组信息
-func (m *CategoryModel) Delete() (bool, error) {
+func (m *IscCapcCategory) Delete() (bool, error) {
 	if m.ID == 0 {
 		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
 	}

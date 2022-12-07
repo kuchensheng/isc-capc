@@ -20,7 +20,7 @@ func (repository *categoryRepository) GetDB() *gorm.DB {
 	return repository.BaseRepository.GetDB()
 }
 
-func (repository *categoryRepository) GetAllApp(dto category.SearchVO) ([]CategoryModel, error) {
+func (repository *categoryRepository) GetAllApp(dto category.SearchVO) ([]IscCapcCategory, error) {
 	db := repository.GetDB().Where("parent_id = ?", dto.ParentId)
 	if dto.Name != "" && strings.Trim(dto.Name, " ") != "" {
 		db = db.Where("name LIKE ?", "%"+dto.Name+"%")
@@ -35,7 +35,7 @@ func (repository *categoryRepository) GetAllApp(dto category.SearchVO) ([]Catego
 		db = db.Where("code IN ?", dto.Codes)
 	}
 
-	var result []CategoryModel
+	var result []IscCapcCategory
 	rows, err := db.Table(repository.TableName).Rows()
 	defer rows.Close()
 	if err != nil {
@@ -44,7 +44,7 @@ func (repository *categoryRepository) GetAllApp(dto category.SearchVO) ([]Catego
 	}
 
 	for rows.Next() {
-		var item CategoryModel
+		var item IscCapcCategory
 		if err := db.ScanRows(rows, &item); err != nil {
 			log.Warn().Msgf("信息扫描失败,%v", err)
 			continue
