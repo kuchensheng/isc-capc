@@ -3,11 +3,14 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kuchensheng/capc/domain"
+	"github.com/kuchensheng/capc/infrastructure/common"
+	"github.com/kuchensheng/capc/infrastructure/model/api"
+	api2 "github.com/kuchensheng/capc/infrastructure/vo/api"
 	"github.com/kuchensheng/capc/transfer/dto/api_dto"
 )
 
 var ApiDomain = func(context *gin.Context) *apiDomain {
-	return &apiDomain{context, context.GetHeader(domain.TENANTID)}
+	return &apiDomain{context, context.GetString(domain.TENANTID)}
 }
 
 type apiDomain struct {
@@ -20,7 +23,14 @@ func (domain *apiDomain) RegisterApi() (int, error) {
 	if err := domain.Context.BindJSON(dto); err != nil {
 		return 0, err
 	}
+	if _, ok := domain.CheckExisted(dto.Code); ok {
+		return 0, common.API_CODE_EXISTS.Exception(nil)
+	}
 	do := dto.Dto2DO()
 	do.SetTenantId(domain.TenantId)
 	return do.ID, do.Create()
+}
+
+func (domain *apiDomain) CheckExisted(code string) (api.IscCapcApiInfo, bool) {
+	return api.ApiRepository.GetOne(api2.SearchVO{Code: code})
 }

@@ -27,6 +27,7 @@ func (connector mysqlConnector) Open() error {
 	host := config.GetValueString("base.datasource.host")
 	port := config.GetValueIntDefault("base.datasource.port", 3306)
 	database := config.GetValueString("base.datasource.database")
+	debug := config.GetValueBoolDefault("base.datasource.debug", false)
 	url := fmt.Sprintf(_DB, userName, password, host, port, database)
 	logger.Info("连接数据库:%s", url)
 	db, err := gorm.Open(mysql.Open(url), &gorm.Config{})
@@ -37,7 +38,9 @@ func (connector mysqlConnector) Open() error {
 	sqlDB.SetMaxOpenConns(5)
 	sqlDB.SetMaxIdleConns(2)
 	sqlDB.SetConnMaxIdleTime(time.Minute)
-	db = db.Debug()
+	if debug {
+		db = db.Debug()
+	}
 	Db = db
 	return nil
 }

@@ -58,6 +58,7 @@ func (dto *IscApiInfoDTO) Dto2DO() *api.IscCapcApiInfo {
 		}
 		return strIds
 	}(), category.SEP)
+	model.CategoryId = dto.CategoryId
 	model.CategoryFullName = strings.Join(dto.CategoryFullName, category.SEP)
 	model.Status = int(category.String2Status(dto.Status))
 	model.AuthType = int(category.String2AuthType(dto.AuthType))

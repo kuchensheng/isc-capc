@@ -11,8 +11,7 @@ type Repository interface {
 }
 
 type BaseRepository struct {
-	DB        *gorm.DB
-	TableName string
+	DB *gorm.DB
 }
 
 func (repository *BaseRepository) GetDB() *gorm.DB {

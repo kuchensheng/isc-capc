@@ -15,7 +15,7 @@ import (
 )
 
 var CategoryDomain = func(context *gin.Context) *categoryDomain {
-	return &categoryDomain{context, context.GetHeader(domain.TENANTID)}
+	return &categoryDomain{context, context.GetString(domain.TENANTID)}
 }
 
 type categoryDomain struct {

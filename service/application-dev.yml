@@ -11,3 +11,11 @@ base:
   server:
     enable: true
     port: 38300
+  datasource:
+    host: 10.30.30.95
+    port: 23306
+    driverName: mysql
+    username: isyscore
+    password: Isysc0re
+    database: isc_ecology_orchestration
+    debug: true

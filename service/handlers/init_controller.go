@@ -27,7 +27,12 @@ func InitAllView() {
 
 func handlerBusiness(context *gin.Context, handler func(context *gin.Context) (any, error)) {
 	if result, err := handler(context); err != nil {
-		context.JSON(http.StatusBadRequest, common.BAD_REQUEST.Exception(err))
+		context.JSON(http.StatusBadRequest, func() error {
+			if common.IsBusinessException(err) {
+				return err
+			}
+			return common.BAD_REQUEST.Exception(err)
+		}())
 		context.Abort()
 	} else {
 		context.JSON(http.StatusOK, common.SUCCESS.Exception(result))

@@ -37,6 +37,10 @@ func (be BusinessEnum) Exception(data any) *BusinessException {
 	}
 }
 
+func IsBusinessException(err error) bool {
+	return nil != err && reflect.TypeOf(err).Kind() == reflect.TypeOf(&BusinessException{}).Kind()
+}
+
 func new(code int, message string) BusinessEnum {
 	return BusinessEnum{Code: code, Message: message}
 }

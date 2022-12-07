@@ -88,6 +88,7 @@ func (model *IscCapcApiInfo) BeforeCreate(tx *gorm.DB) error {
 		return err
 	}
 
+	model.Version = _VERSION
 	return model.Valid()
 }
 

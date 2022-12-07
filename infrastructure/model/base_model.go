@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var timeFormat = "2006-01-02 15:04:05"
+
 type BaseModel struct {
 	//ID 主键
 	ID int `json:"id"`
@@ -32,12 +34,12 @@ func (model *BaseModel) GetCapcTableName() string {
 }
 
 func (model *BaseModel) BeforeCreate(tx *gorm.DB) error {
-	if model.ID != 0 {
-		return common.NOT_ALLOW.Exception("创建时,id必须为空")
-	}
+	model.ID = 0
 	if model.TenantId == "" {
 		return common.NOT_ALLOW.Exception("租户Id不能为空")
 	}
+	model.CreateTime = time.Now().Format(timeFormat)
+	model.UpdateTime = model.CreateTime
 	return nil
 }
 
@@ -50,6 +52,7 @@ func (model *BaseModel) BeforeUpdate(tx *gorm.DB) error {
 	if result.RowsAffected < 0 {
 		return common.CATEGORY_NOT_EXISTS.Exception(nil)
 	}
+	model.UpdateTime = time.Now().Format(timeFormat)
 	return nil
 }
 

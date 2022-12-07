@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var CategoryRepository *categoryRepository = &categoryRepository{model.BaseRepository{DB: connetor.Db, TableName: tableName}}
+var CategoryRepository = &categoryRepository{model.BaseRepository{DB: connetor.Db.Table(tableName)}}
 
 type categoryRepository struct {
 	model.BaseRepository
@@ -36,7 +36,7 @@ func (repository *categoryRepository) GetAllApp(dto category.SearchVO) ([]IscCap
 	}
 
 	var result []IscCapcCategory
-	rows, err := db.Table(repository.TableName).Rows()
+	rows, err := db.Rows()
 	defer rows.Close()
 	if err != nil {
 		log.Warn().Msgf("分组信息查询失败,%v", err)

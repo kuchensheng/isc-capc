@@ -22,7 +22,7 @@ func LoginFilter() gin.HandlerFunc {
 			context.Abort()
 			return
 		}
-		context.Header(domain.TENANTID, stauts.Data.TenantId)
+		context.Set(domain.TENANTID, stauts.Data.TenantId)
 		context.Next()
 	}
 }
