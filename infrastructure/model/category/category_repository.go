@@ -55,3 +55,23 @@ func (repository *categoryRepository) GetAllApp(dto category.SearchVO) ([]IscCap
 	return result, nil
 
 }
+
+func (repository *categoryRepository) GetDetail(categoryId int, code string) (IscCapcCategory, bool) {
+	c, f := IscCapcCategory{}, false
+	if categoryId == 0 && code == "" {
+		return c, f
+	}
+	db := repository.GetDB()
+	if categoryId != 0 {
+		db = db.Where("id = ?", categoryId)
+	}
+	if code != "" {
+		db = db.Where("code = ?", code)
+	}
+	db = db.Take(&c)
+	if db.Error != nil || db.RowsAffected < 1 {
+		log.Warn().Msgf("未获取到分组信息,error=%v,count=%d", db.Error, db.RowsAffected)
+		return c, f
+	}
+	return c, true
+}

@@ -48,7 +48,7 @@ func (model *BaseModel) BeforeUpdate(tx *gorm.DB) error {
 		return common.NOT_ALLOW.Exception("租户Id不能为空")
 	}
 	//检查信息是否存在
-	result := tx.Table(model.GetCapcTableName()).First(model)
+	result := tx.Table(model.GetCapcTableName()).Where("id = ?", model.ID).Take(model)
 	if result.RowsAffected < 0 {
 		return common.CATEGORY_NOT_EXISTS.Exception(nil)
 	}

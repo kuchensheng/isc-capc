@@ -17,17 +17,20 @@ func (repository *apiRepository) GetDB() *gorm.DB {
 	return repository.BaseRepository.GetDB()
 }
 
-func (repository *apiRepository) GetOne(vo api.SearchVO) (IscCapcApiInfo, bool) {
-	db := repository.GetDB()
-	if vo.Code != "" {
-		db = db.Where("code = ?", vo.Code)
-	}
+func (repository *apiRepository) GetOne(vo api.DetailVO) (IscCapcApiInfo, bool) {
+	db := repository.buildDetailDB(vo)
 	result := IscCapcApiInfo{}
 	db = db.Take(&result)
 	if db.Error == nil && db.RowsAffected > 0 {
 		return result, true
 	}
 	return result, false
+}
+
+func (repository *apiRepository) buildDetailDB(vo api.DetailVO) *gorm.DB {
+	db := repository.GetDB()
+	db.Where(&vo)
+	return db
 }
 
 func (repository *apiRepository) GetBaseApiList() {
