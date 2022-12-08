@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"github.com/kuchensheng/capc/infrastructure/common"
 	"github.com/kuchensheng/capc/util"
 	"gorm.io/gorm"
@@ -28,9 +29,9 @@ func (model *BaseModel) SetTenantId(tenantId string) {
 type OptionInterface interface {
 	GetTableName() string
 
-	Create() (bool, error)
-	Update() (bool, error)
-	Delete() (bool, error)
+	Create(ctx context.Context) (bool, error)
+	Update(ctx context.Context) (bool, error)
+	Delete(ctx context.Context) (bool, error)
 }
 
 func (model *BaseModel) BeforeCreate(tx *gorm.DB) error {

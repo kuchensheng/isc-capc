@@ -28,7 +28,7 @@ func (op *ApiOperationRepository) Create(ctx context.Context) (bool, error) {
 		}
 	}()
 	log.Info().Msgf("创建API基本信息...")
-	if ok, err := op.Api.Create(); !ok || err != nil {
+	if ok, err := op.Api.Create(ctx); !ok || err != nil {
 		tx.Rollback()
 		return ok, err
 	}
@@ -54,7 +54,7 @@ func (op *ApiOperationRepository) Update(ctx context.Context) (bool, error) {
 		}
 	}()
 	log.Info().Msgf("更新API基本信息...")
-	if ok, err := op.Api.Update(); !ok || err != nil {
+	if ok, err := op.Api.Update(ctx); !ok || err != nil {
 		tx.Rollback()
 		return ok, err
 	}
@@ -80,7 +80,7 @@ func (op *ApiOperationRepository) Delete(ctx context.Context) (bool, error) {
 		}
 	}()
 	log.Info().Msgf("删除API信息...")
-	if ok, err := op.Api.Delete(); !ok || err != nil {
+	if ok, err := op.Api.Delete(ctx); !ok || err != nil {
 		tx.Rollback()
 		return ok, err
 	}
@@ -88,7 +88,7 @@ func (op *ApiOperationRepository) Delete(ctx context.Context) (bool, error) {
 	op.Parameter.Code = op.Api.Code
 	if op.Parameter != nil {
 		log.Info().Msgf("删除API参数信息")
-		if ok, err := op.Parameter.Delete(); !ok || err != nil {
+		if ok, err := op.Parameter.Delete(ctx); !ok || err != nil {
 			tx.Rollback()
 			return ok, err
 		}
@@ -108,12 +108,12 @@ func (op *ApiOperationRepository) saveOrUpdateParameter(ctx context.Context) (bo
 		one.Parameters = op.Parameter.Parameters
 		one.Responses = op.Parameter.Responses
 		one.Type = op.Parameter.Type
-		if ok, err := one.Update(); !ok || err != nil {
+		if ok, err := one.Update(ctx); !ok || err != nil {
 			return ok, err
 		} else {
 			return true, nil
 		}
 	} else {
-		return op.Parameter.Create()
+		return op.Parameter.Create(ctx)
 	}
 }

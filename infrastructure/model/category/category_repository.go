@@ -3,7 +3,6 @@ package category
 import (
 	"context"
 	"github.com/kuchensheng/capc/infrastructure/common"
-	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
 	"github.com/kuchensheng/capc/infrastructure/vo/category"
 	"github.com/rs/zerolog/log"
@@ -11,14 +10,14 @@ import (
 	"strings"
 )
 
-var CategoryRepository = &categoryRepository{model.BaseRepository{DB: connetor.Db.Table(tableName)}}
+var CategoryRepository = &categoryRepository{}
 
 type categoryRepository struct {
 	model.BaseRepository
 }
 
 func (repository *categoryRepository) GetDB(context context.Context) *gorm.DB {
-	return repository.BaseRepository.GetDB(context)
+	return repository.BaseRepository.GetDB(context).Table(tableName)
 }
 
 func (repository *categoryRepository) GetAllApp(dto category.SearchVO, context context.Context) ([]IscCapcCategory, error) {

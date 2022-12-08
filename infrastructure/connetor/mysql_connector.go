@@ -42,6 +42,6 @@ func (connector mysqlConnector) Open() error {
 	if debug {
 		db = db.Debug()
 	}
-	Db = db
+	gormDB = db
 	return nil
 }

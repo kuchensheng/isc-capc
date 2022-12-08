@@ -25,7 +25,7 @@ type categoryDomain struct {
 func (domain *categoryDomain) RegisterCategory() (int, error) {
 	dto := getRawData2DTO(domain.Context)
 	do := dto.Dto2Do()
-	if _, err := do.Create(); err != nil {
+	if _, err := do.Create(domain.Context); err != nil {
 		log.Warn().Msgf("分组信息注册失败,%v", err)
 		return 0, err
 	}
@@ -34,7 +34,7 @@ func (domain *categoryDomain) RegisterCategory() (int, error) {
 }
 
 func (domain *categoryDomain) UpdateCategory(dto category.CategoryDTO) error {
-	_, err := dto.Dto2Do().Update()
+	_, err := dto.Dto2Do().Update(domain.Context)
 	if err != nil {
 		log.Warn().Msgf("分组信息更新失败", err)
 		return err

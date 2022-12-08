@@ -1,6 +1,7 @@
 package category
 
 import (
+	"context"
 	"github.com/kuchensheng/capc/infrastructure/common"
 	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
@@ -62,8 +63,12 @@ func (m *IscCapcCategory) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-func (model *IscCapcCategory) Create() (bool, error) {
-	result := connetor.Db.Table(model.GetTableName()).Create(model)
+func (model *IscCapcCategory) Create(ctx context.Context) (bool, error) {
+	tenantId := ctx.Value(common.TENANTID)
+	if tenantId != nil {
+		model.TenantId = tenantId.(string)
+	}
+	result := connetor.GetDB(ctx).Table(model.GetTableName()).Create(model)
 	if e := result.Error; e != nil {
 		log.Warn().Msgf("信息注册异常,%v", e)
 		return false, common.REGISTER_EXCEPTION.Exception(e.Error())
@@ -73,12 +78,13 @@ func (model *IscCapcCategory) Create() (bool, error) {
 }
 
 //Update 根据Id修改分组信息
-func (model *IscCapcCategory) Update() (bool, error) {
+func (model *IscCapcCategory) Update(ctx context.Context) (bool, error) {
 	if model.ID == 0 {
 		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
 	}
+
 	//只更新非零字段
-	result := connetor.Db.Table(model.GetTableName()).Updates(model)
+	result := connetor.GetDB(ctx).Table(model.GetTableName()).Updates(model)
 	if result.Error != nil {
 		log.Warn().Msgf("信息更新异常,%v", result.Error)
 		return false, common.UPDATE_EXCEPTION.Exception(result.Error.Error())
@@ -87,11 +93,11 @@ func (model *IscCapcCategory) Update() (bool, error) {
 	return true, nil
 }
 
-func (model *IscCapcCategory) Delete() (bool, error) {
+func (model *IscCapcCategory) Delete(ctx context.Context) (bool, error) {
 	if model.ID == 0 {
 		return false, common.ID_IS_NULL.Exception(nil)
 	}
-	db := connetor.Db.Table(model.GetTableName())
+	db := connetor.GetDB(ctx).Table(model.GetTableName())
 	db.Where("id = ?", model.ID)
 	result := db.Delete(model)
 	if e := result.Error; e != nil {

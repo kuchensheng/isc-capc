@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
@@ -12,10 +11,10 @@ type apiParameterRepository struct {
 	model.BaseRepository
 }
 
-var ApiParameterRepository = &apiParameterRepository{model.BaseRepository{DB: connetor.Db.Table(_tableName)}}
+var ApiParameterRepository = &apiParameterRepository{}
 
 func (repository *apiParameterRepository) GetDB(context context.Context) *gorm.DB {
-	return repository.BaseRepository.GetDB(context)
+	return repository.BaseRepository.GetDB(context).Table(_tableName)
 }
 
 func (repository *apiParameterRepository) GetOne(apiId int, code string, context context.Context) *IscCapcApiReqResp {
