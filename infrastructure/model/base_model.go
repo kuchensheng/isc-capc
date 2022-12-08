@@ -2,7 +2,9 @@ package model
 
 import (
 	"github.com/kuchensheng/capc/infrastructure/common"
+	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/util"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"reflect"
 	"time"
@@ -93,6 +95,44 @@ func (model *BaseModel) GetNotNullFields() []string {
 		}
 	}
 	return result
+}
+
+func (model *BaseModel) Create() (bool, error) {
+	result := connetor.Db.Table(model.GetCapcTableName()).Create(model)
+	if e := result.Error; e != nil {
+		log.Warn().Msgf("信息注册异常,%v", e)
+		return false, common.REGISTER_EXCEPTION.Exception(e.Error())
+	}
+	return true, nil
+}
+
+//Update 根据Id修改分组信息
+func (model *BaseModel) Update() (bool, error) {
+	if model.ID == 0 {
+		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
+	}
+	//只更新非零字段
+	result := connetor.Db.Table(model.GetCapcTableName()).Updates(model)
+	if result.Error != nil {
+		log.Warn().Msgf("信息更新异常,%v", result.Error)
+		return false, common.UPDATE_EXCEPTION.Exception(result.Error.Error())
+	}
+	return true, nil
+}
+
+func (model *BaseModel) Delete() (bool, error) {
+	if model.ID == 0 {
+		return false, common.ID_IS_NULL.Exception(nil)
+	}
+	result := connetor.Db.Table(model.GetCapcTableName()).Delete(model)
+	if e := result.Error; e != nil {
+		log.Warn().Msgf("信息删除异常,%v", e)
+		return false, common.DELETE_EXCEPTION.Exception(e.Error())
+	}
+	if result.RowsAffected < 1 {
+		log.Warn().Msg("虽然没报错，但是没删除数据")
+	}
+	return true, nil
 }
 
 type JsonTime struct {

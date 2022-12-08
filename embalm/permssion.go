@@ -2,9 +2,11 @@ package embalm
 
 import (
 	"encoding/json"
+	"github.com/isyscore/isc-gobase/config"
 	"github.com/isyscore/isc-gobase/http"
 	"github.com/rs/zerolog/log"
 	http2 "net/http"
+	"strings"
 )
 
 type UserStatus struct {
@@ -24,6 +26,9 @@ type data struct {
 	SuperAdmin bool     `json:"superAdmin"`
 }
 
+var statusUri = "/api/permission/auth/status"
+var defaultHost = "http://isc-permission-service:32100"
+
 func GetUserStatus(token string) UserStatus {
 	status := UserStatus{
 		Data: data{},
@@ -39,7 +44,13 @@ func GetUserStatus(token string) UserStatus {
 		"token": []string{token},
 		//"content-type": []string{"application/json"},
 	}
-	code, _, result, err := http.Get("http://10.30.30.95:38080/api/permission/auth/status", header, make(map[string]string))
+	host := config.GetValueStringDefault("feign.permission", defaultHost)
+	url := func(h string) string {
+		h = h + statusUri
+		h = strings.ReplaceAll(h, "//api", "/api")
+		return h
+	}(host)
+	code, _, result, err := http.Get(url, header, make(map[string]string))
 	if code != http2.StatusOK {
 		log.Error().Msgf("不能正确地获取到用户状态,code = %d", code)
 		return status

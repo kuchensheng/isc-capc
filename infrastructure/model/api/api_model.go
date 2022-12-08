@@ -2,9 +2,7 @@ package api
 
 import (
 	"github.com/kuchensheng/capc/infrastructure/common"
-	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
-	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"math/rand"
 	"strings"
@@ -104,40 +102,4 @@ func randString(lenNum int) string {
 		str.WriteString(_CHARS[rand.Intn(length)])
 	}
 	return str.String()
-}
-
-func (model *IscCapcApiInfo) Create() error {
-	result := connetor.Db.Table(model.GetCapcTableName()).Create(model)
-	if err := result.Error; err != nil {
-		log.Warn().Msgf("api信息新增失败,%v", err)
-		return common.API_REGISTER_EXCEPTION.Exception(err.Error())
-	} else if result.RowsAffected < 1 {
-		log.Warn().Msgf("未知原因导致没有新增成功")
-		return common.UNKNOWN_EXCEPTION.Exception(nil)
-	}
-	return nil
-}
-
-func (model *IscCapcApiInfo) Update() error {
-	result := connetor.Db.Table(model.GetCapcTableName()).Updates(model)
-	if err := result.Error; err != nil {
-		log.Warn().Msgf("api信息更新失败,%v", err)
-		return common.API_REGISTER_EXCEPTION.Exception(err.Error())
-	} else if result.RowsAffected < 1 {
-		log.Warn().Msgf("未知原因导致没有更新成功")
-		return common.UNKNOWN_EXCEPTION.Exception(nil)
-	}
-	return nil
-}
-
-func (model *IscCapcApiInfo) Delete() error {
-	result := connetor.Db.Table(model.GetCapcTableName()).Delete(model)
-	if err := result.Error; err != nil {
-		log.Warn().Msgf("api信息删除失败,%v", err)
-		return common.API_REGISTER_EXCEPTION.Exception(err.Error())
-	} else if result.RowsAffected < 1 {
-		log.Warn().Msgf("未知原因导致没有删除成功")
-		return common.UNKNOWN_EXCEPTION.Exception(nil)
-	}
-	return nil
 }

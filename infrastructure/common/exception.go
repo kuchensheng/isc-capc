@@ -49,6 +49,11 @@ var (
 	SUCCESS           = new(0, "成功")
 	UNKNOWN_EXCEPTION = new(21060000, "未知异常")
 
+	REGISTER_EXCEPTION = new(21060001, "信息注册异常")
+	UPDATE_EXCEPTION   = new(21060002, "信息更新异常")
+	DELETE_EXCEPTION   = new(21060003, "信息删除异常")
+	ID_IS_NULL         = new(21060004, "id为空")
+
 	API_CODE_EXISTS        = new(2106001, "api-code已存在")
 	API_PATH_EXISTS        = new(2106002, "api-path已存在")
 	API_NAME_EXISTS        = new(2106003, "api-name已存在")
@@ -78,5 +83,9 @@ var (
 	DYNAMIC_EXCEPTION = new(2106300, "spi引用透传失败")
 	DYNAMIC_NOT_ALLOW = new(2106301, "spi引用不能通过id查询,请切换code查询")
 
-	SWAGGER_PARSE_EXCEPTION = new(2106400, "swagger解析异常")
+	API_P_APIID_IS_NULL      = new(2106400, "apiId为空")
+	API_P_REGISTER_EXCEPTION = new(2106401, "api参数信息注册异常")
+	API_P_UPDATE_EXCEPTION   = new(2106500, "api参数信息更新异常")
+
+	SWAGGER_PARSE_EXCEPTION = new(2106500, "swagger解析异常")
 )

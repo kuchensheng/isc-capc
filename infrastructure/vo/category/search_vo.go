@@ -129,3 +129,11 @@ func String2Protocol(name string) Protocol {
 	}
 	return HTTP
 }
+
+var respTypeNames = []string{"JSON"}
+
+type RespType int
+
+const (
+	JSON RespType = iota
+)

@@ -26,15 +26,11 @@ type categoryDomain struct {
 func (domain *categoryDomain) RegisterCategory() (int, error) {
 	dto := getRawData2DTO(domain.Context)
 	do := dto.Dto2Do()
-	_, err := do.Create(func() (bool, error) {
-		dto.ID = do.BaseModel.ID
-		do.SetTenantId(domain.TenantId)
-		return true, nil
-	})
-	if err != nil {
+	if _, err := do.Create(); err != nil {
 		log.Warn().Msgf("分组信息注册失败,%v", err)
 		return 0, err
 	}
+	dto.ID = do.ID
 	return do.ID, nil
 }
 

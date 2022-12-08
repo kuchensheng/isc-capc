@@ -1,11 +1,8 @@
 package category
 
 import (
-	"github.com/kuchensheng/capc/infrastructure/common"
-	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
 	"github.com/kuchensheng/capc/util"
-	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
@@ -56,44 +53,4 @@ func (m *IscCapcCategory) BeforeCreate(tx *gorm.DB) error {
 		}
 	}
 	return nil
-}
-
-//Create 新增分组信息
-func (m *IscCapcCategory) Create(handler func() (bool, error)) (bool, error) {
-	result := connetor.Db.Table(m.GetCapcTableName()).Create(m)
-	if e := result.Error; e != nil {
-		log.Warn().Msgf("分组信息新增失败%v", e)
-		return false, common.CATEGORY_REGISTER_EXCEPTION.Exception(e)
-	}
-	return handler()
-}
-
-//Update 根据Id修改分组信息
-func (m *IscCapcCategory) Update() (bool, error) {
-	if m.ID == 0 {
-		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
-	}
-	//只更新非零字段
-	result := connetor.Db.Table(m.GetCapcTableName()).Updates(m)
-	if result.Error != nil {
-		log.Warn().Msgf("分组信息更新失败%v", result.Error)
-		return false, common.CATEGORY_REGISTER_EXCEPTION.Exception(result.Error)
-	}
-	return true, nil
-}
-
-//Delete 根据Id删除分组信息
-func (m *IscCapcCategory) Delete() (bool, error) {
-	if m.ID == 0 {
-		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
-	}
-	result := connetor.Db.Table(m.GetCapcTableName()).Delete(m)
-	if e := result.Error; e != nil {
-		log.Warn().Msgf("无法删除分组信息，%v", e)
-		return false, common.CATEGORY_DELETE_EXCEPTION.Exception(e)
-	}
-	if result.RowsAffected < 1 {
-		log.Warn().Msg("虽然没报错，但是没删除数据")
-	}
-	return true, nil
 }
