@@ -58,16 +58,7 @@ func (domain *categoryDomain) GetAllApp() ([]category.CategoryDTO, error) {
 
 func getSearchDTO(ctx *gin.Context) category3.SearchVO {
 	search := &category3.SearchVO{}
-	if v, ok := ctx.GetQuery("name"); ok {
-		search.Name = v
-	}
-
-	if v, ok := ctx.GetQuery("type"); ok {
-		search.Type = category3.CategoryType(util.StrToInt(v))
-	}
-	if v, ok := ctx.GetQuery("parentId"); ok {
-		search.ParentId = util.StrToInt(v)
-	}
+	ctx.ShouldBind(search)
 
 	if v, ok := ctx.GetQuery("codes"); ok {
 		v = strings.ReplaceAll(strings.ReplaceAll(v, "[", ""), "]", "")

@@ -103,6 +103,7 @@ func (model *BaseModel) Create() (bool, error) {
 		log.Warn().Msgf("信息注册异常,%v", e)
 		return false, common.REGISTER_EXCEPTION.Exception(e.Error())
 	}
+	log.Info().Msgf("信息注册成功,ID=%d", model.ID)
 	return true, nil
 }
 
@@ -117,6 +118,7 @@ func (model *BaseModel) Update() (bool, error) {
 		log.Warn().Msgf("信息更新异常,%v", result.Error)
 		return false, common.UPDATE_EXCEPTION.Exception(result.Error.Error())
 	}
+	log.Info().Msgf("信息更新成功,ID=%d", model.ID)
 	return true, nil
 }
 
@@ -124,7 +126,9 @@ func (model *BaseModel) Delete() (bool, error) {
 	if model.ID == 0 {
 		return false, common.ID_IS_NULL.Exception(nil)
 	}
-	result := connetor.Db.Table(model.GetCapcTableName()).Delete(model)
+	db := connetor.Db.Table(model.GetCapcTableName())
+	db.Where("id = ?", model.ID)
+	result := db.Delete(model)
 	if e := result.Error; e != nil {
 		log.Warn().Msgf("信息删除异常,%v", e)
 		return false, common.DELETE_EXCEPTION.Exception(e.Error())
@@ -132,6 +136,7 @@ func (model *BaseModel) Delete() (bool, error) {
 	if result.RowsAffected < 1 {
 		log.Warn().Msg("虽然没报错，但是没删除数据")
 	}
+	log.Info().Msgf("信息删除成功,ID=%d", model.ID)
 	return true, nil
 }
 

@@ -34,6 +34,7 @@ func (connector mysqlConnector) Open() error {
 	if err != nil {
 		logger.Fatal("无法打开连接：%v", err)
 	}
+	db.DB()
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxOpenConns(5)
 	sqlDB.SetMaxIdleConns(2)

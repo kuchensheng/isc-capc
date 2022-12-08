@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"gorm.io/gorm"
 )
@@ -20,6 +21,7 @@ func (repository *BaseRepository) GetDB() *gorm.DB {
 		db = connetor.Db
 		repository.DB = db
 	}
-	return db
+	db = db.WithContext(context.Background())
 
+	return db
 }

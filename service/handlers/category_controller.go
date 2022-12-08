@@ -26,7 +26,7 @@ func (handler *categoryHandler) InitView() {
 			})
 		})
 		//获取应用或分组列表
-		g.GET("/category/list", func(context *gin.Context) {
+		g.GET("/list", func(context *gin.Context) {
 			handlerBusiness(context, func(context *gin.Context) (any, error) {
 				return category.CategoryDomain(context).GetAllApp()
 			})

@@ -46,7 +46,7 @@ type IscApiInfoDTO struct {
 	Consumes string `json:"consumes"`
 }
 
-func (dto *IscApiInfoDTO) Dto2DO() *api.IscCapcApiInfo {
+func (dto *IscApiDetailDTO) Dto2DO() (*api.IscCapcApiInfo, *api.IscCapcApiReqResp) {
 	model := &api.IscCapcApiInfo{}
 	data, _ := json.Marshal(dto)
 	_ = json.Unmarshal(data, model)
@@ -63,5 +63,15 @@ func (dto *IscApiInfoDTO) Dto2DO() *api.IscCapcApiInfo {
 	model.Status = int(category.String2Status(dto.Status))
 	model.AuthType = int(category.String2AuthType(dto.AuthType))
 	model.Protocol = category.String2Protocol(dto.Protocol).GetName()
-	return model
+	var resp *api.IscCapcApiReqResp
+	if dto.Parameters != "" || dto.Responses != "" {
+		resp = &api.IscCapcApiReqResp{
+			Code:       dto.Code,
+			ApiId:      dto.ID,
+			Parameters: dto.Parameters,
+			Responses:  dto.Responses,
+			Type:       int(category.String2RespType(dto.RespType)),
+		}
+	}
+	return model, resp
 }

@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/kuchensheng/capc/infrastructure/common"
+	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
 	"gorm.io/gorm"
 	"strings"
@@ -13,10 +14,17 @@ const _tableName = "isc_capc_api_req_resp"
 type IscCapcApiReqResp struct {
 	model.BaseModel
 
-	ApiId      int    `json:"api_id"`
+	//关联的ApiId
+	//fixme 未来将被废弃
+	ApiId int `json:"api_id"`
+	//关联的ApiCode
+	Code string `json:"code"`
+	//Parameters 入参信息模型
 	Parameters string `json:"parameters"`
-	Responses  string `json:"responses"`
-	Type       int    `json:"type"`
+	//Resposes 出参信息模型
+	Responses string `json:"responses"`
+	//Type 出参类型，JSON/XML
+	Type int `json:"type"`
 }
 
 func NewIscCapcApiReqResp() *IscCapcApiReqResp {
@@ -53,4 +61,23 @@ func (model *IscCapcApiReqResp) BeforeCreate(tx *gorm.DB) error {
 
 func (model *IscCapcApiReqResp) BeforeUpdate(tx *gorm.DB) error {
 	return model.BaseModel.BeforeUpdate(tx)
+}
+
+func (model *IscCapcApiReqResp) Delete() (bool, error) {
+	if model.ApiId == 0 && model.Code == "" {
+		return false, common.BAD_REQUEST.Exception("apiId或code不能同时为空")
+	}
+	db := connetor.Db.Table(model.GetCapcTableName())
+	deleteParam := &struct {
+		ApiId int
+		Code  string
+	}{
+		model.ApiId,
+		model.Code,
+	}
+	result := db.Delete(deleteParam)
+	if err := result.Error; err != nil {
+		return false, common.DELETE_EXCEPTION.Exception(err.Error())
+	}
+	return true, nil
 }

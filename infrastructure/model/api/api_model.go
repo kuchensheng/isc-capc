@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/kuchensheng/capc/infrastructure/common"
+	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
 	"gorm.io/gorm"
 	"math/rand"
@@ -88,6 +89,19 @@ func (model *IscCapcApiInfo) BeforeCreate(tx *gorm.DB) error {
 
 	model.Version = _VERSION
 	return model.Valid()
+}
+
+func (model *IscCapcApiInfo) Delete() (bool, error) {
+	if model.ID != 0 {
+		return model.BaseModel.Delete()
+	}
+	if model.Code != "" {
+		result := connetor.Db.Table(tableName).Where("code = ?", model.Code).Delete(&IscCapcApiInfo{})
+		if e := result.Error; e != nil {
+			return false, e
+		}
+	}
+	return true, nil
 }
 
 var _VERSION = "1.0.0"

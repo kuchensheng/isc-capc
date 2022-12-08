@@ -5,11 +5,11 @@ import "strings"
 const SEP = "/"
 
 type SearchVO struct {
-	Name     string       `json:"name"`
-	Type     CategoryType `json:"type"`
-	Ids      []int        `json:"ids"`
-	Codes    []string     `json:"codes"`
-	ParentId int          `json:"parentId"`
+	Name     string       `form:"name"`
+	Type     CategoryType `form:"type"`
+	Ids      []int        `form:"ids"`
+	Codes    []string     `form:"codes"`
+	ParentId int          `form:"parentId"`
 }
 
 type CategoryType int
@@ -137,3 +137,12 @@ type RespType int
 const (
 	JSON RespType = iota
 )
+
+func String2RespType(name string) RespType {
+	for i, typeName := range respTypeNames {
+		if typeName == strings.ToUpper(name) {
+			return RespType(i)
+		}
+	}
+	return JSON
+}
