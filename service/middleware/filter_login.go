@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kuchensheng/capc/domain"
 	"github.com/kuchensheng/capc/embalm"
 	"github.com/kuchensheng/capc/infrastructure/common"
 	"net/http"
@@ -22,7 +21,7 @@ func LoginFilter() gin.HandlerFunc {
 			context.Abort()
 			return
 		}
-		context.Set(domain.TENANTID, stauts.Data.TenantId)
+		context.Set(common.TENANTID, stauts.Data.TenantId)
 		context.Next()
 	}
 }

@@ -3,7 +3,6 @@ package category
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/kuchensheng/capc/domain"
 	"github.com/kuchensheng/capc/infrastructure/common"
 	category2 "github.com/kuchensheng/capc/infrastructure/model/category"
 	category3 "github.com/kuchensheng/capc/infrastructure/vo/category"
@@ -15,7 +14,7 @@ import (
 )
 
 var CategoryDomain = func(context *gin.Context) *categoryDomain {
-	return &categoryDomain{context, context.GetString(domain.TENANTID)}
+	return &categoryDomain{context, context.GetString(common.TENANTID)}
 }
 
 type categoryDomain struct {
@@ -44,7 +43,7 @@ func (domain *categoryDomain) UpdateCategory(dto category.CategoryDTO) error {
 }
 
 func (domain *categoryDomain) GetAllApp() ([]category.CategoryDTO, error) {
-	app, err := category2.CategoryRepository.GetAllApp(getSearchDTO(domain.Context))
+	app, err := category2.CategoryRepository.GetAllApp(getSearchDTO(domain.Context), domain.Context)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
 	"github.com/rs/zerolog/log"
@@ -13,15 +14,15 @@ type apiParameterRepository struct {
 
 var ApiParameterRepository = &apiParameterRepository{model.BaseRepository{DB: connetor.Db.Table(_tableName)}}
 
-func (repository *apiParameterRepository) GetDB() *gorm.DB {
-	return repository.BaseRepository.GetDB()
+func (repository *apiParameterRepository) GetDB(context context.Context) *gorm.DB {
+	return repository.BaseRepository.GetDB(context)
 }
 
-func (repository *apiParameterRepository) GetOne(apiId int, code string) *IscCapcApiReqResp {
+func (repository *apiParameterRepository) GetOne(apiId int, code string, context context.Context) *IscCapcApiReqResp {
 	if apiId == 0 && code == "" {
 		return nil
 	}
-	db := repository.GetDB()
+	db := repository.GetDB(context)
 	search := &struct {
 		ApiId int
 		Code  string

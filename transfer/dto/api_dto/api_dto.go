@@ -47,7 +47,7 @@ type IscApiInfoDTO struct {
 }
 
 func (dto *IscApiDetailDTO) Dto2DO() (*api.IscCapcApiInfo, *api.IscCapcApiReqResp) {
-	model := &api.IscCapcApiInfo{}
+	model := api.NewIscCapcApiInfo()
 	data, _ := json.Marshal(dto)
 	_ = json.Unmarshal(data, model)
 	model.Type = category.String2CategoryType(dto.Type).GetIdx()

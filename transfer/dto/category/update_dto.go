@@ -51,7 +51,7 @@ func (dto *CategoryDTO) Check() error {
 
 func (dto CategoryDTO) Dto2Do() *category.IscCapcCategory {
 	data, _ := json.Marshal(dto)
-	model := &category.IscCapcCategory{}
+	model := category.NewIscCapcCategory()
 	err := json.Unmarshal(data, model)
 	if err != nil {
 		log.Warn().Msgf("分组信息转换失败,%v", err)

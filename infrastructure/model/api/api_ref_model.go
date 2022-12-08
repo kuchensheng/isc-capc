@@ -1,21 +1,29 @@
 package api
 
 import (
-	"github.com/kuchensheng/capc/infrastructure/connetor"
+	"context"
+	"github.com/kuchensheng/capc/infrastructure/model"
 	"github.com/rs/zerolog/log"
+	"gorm.io/gorm"
 )
 
 type ApiOperationRepository struct {
+	model.BaseRepository
 	Api        *IscCapcApiInfo
 	Repository *apiParameterRepository
 	Parameter  *IscCapcApiReqResp
 }
 
+func (repository *ApiOperationRepository) GetDB(context context.Context) *gorm.DB {
+	return repository.BaseRepository.GetDB(context)
+}
+
 //Create 创建API信息
-func (op *ApiOperationRepository) Create() (bool, error) {
-	tx := connetor.Db.Begin()
+func (op *ApiOperationRepository) Create(ctx context.Context) (bool, error) {
+	tx := op.GetDB(ctx)
 	defer func() {
 		if x := recover(); x != nil {
+			log.Error().Msgf("无法创建API信息，%v", x)
 			tx.Rollback()
 		}
 	}()
@@ -26,7 +34,7 @@ func (op *ApiOperationRepository) Create() (bool, error) {
 	}
 	if op.Parameter != nil {
 		log.Info().Msgf("保存或更新API参数信息")
-		if ok, err := op.saveOrUpdateParameter(); !ok || err != nil {
+		if ok, err := op.saveOrUpdateParameter(ctx); !ok || err != nil {
 			tx.Rollback()
 			return ok, err
 		}
@@ -36,8 +44,8 @@ func (op *ApiOperationRepository) Create() (bool, error) {
 }
 
 //Update 更新API信息
-func (op *ApiOperationRepository) Update() (bool, error) {
-	tx := connetor.Db
+func (op *ApiOperationRepository) Update(ctx context.Context) (bool, error) {
+	tx := op.GetDB(ctx)
 	defer func() {
 		if x := recover(); x != nil {
 			tx.Rollback()
@@ -50,7 +58,7 @@ func (op *ApiOperationRepository) Update() (bool, error) {
 	}
 	log.Info().Msgf("保存或更新API参数信息...")
 	if op.Parameter != nil {
-		if ok, err := op.saveOrUpdateParameter(); !ok || err != nil {
+		if ok, err := op.saveOrUpdateParameter(ctx); !ok || err != nil {
 			tx.Rollback()
 			return ok, err
 		}
@@ -60,8 +68,8 @@ func (op *ApiOperationRepository) Update() (bool, error) {
 }
 
 //Delete 删除API信息
-func (op *ApiOperationRepository) Delete() (bool, error) {
-	tx := connetor.Db
+func (op *ApiOperationRepository) Delete(ctx context.Context) (bool, error) {
+	tx := op.GetDB(ctx)
 	defer func() {
 		if x := recover(); x != nil {
 			tx.Rollback()
@@ -84,12 +92,12 @@ func (op *ApiOperationRepository) Delete() (bool, error) {
 	return true, nil
 }
 
-func (op *ApiOperationRepository) saveOrUpdateParameter() (bool, error) {
+func (op *ApiOperationRepository) saveOrUpdateParameter(ctx context.Context) (bool, error) {
 	if op.Parameter == nil {
 		log.Info().Msg("创建api信息时，不含参数，无需做参数插入或更新处理")
 		return true, nil
 	}
-	if one := op.Repository.GetOne(op.Parameter.ApiId, op.Parameter.Code); one != nil {
+	if one := op.Repository.GetOne(op.Parameter.ApiId, op.Parameter.Code, ctx); one != nil {
 		//更新api参数信息
 		one.Parameters = op.Parameter.Parameters
 		one.Responses = op.Parameter.Responses

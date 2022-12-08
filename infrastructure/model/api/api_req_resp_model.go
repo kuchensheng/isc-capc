@@ -5,6 +5,7 @@ import (
 	"github.com/kuchensheng/capc/infrastructure/common"
 	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"strings"
 )
@@ -48,7 +49,7 @@ func (model *IscCapcApiReqResp) Valid() error {
 	return nil
 }
 
-func (model *IscCapcApiReqResp) GetCapcTableName() string {
+func (model *IscCapcApiReqResp) GetTableName() string {
 	return _tableName
 }
 
@@ -63,11 +64,36 @@ func (model *IscCapcApiReqResp) BeforeUpdate(tx *gorm.DB) error {
 	return model.BaseModel.BeforeUpdate(tx)
 }
 
+func (model *IscCapcApiReqResp) Create() (bool, error) {
+	result := connetor.Db.Table(model.GetTableName()).Create(model)
+	if e := result.Error; e != nil {
+		log.Warn().Msgf("信息注册异常,%v", e)
+		return false, common.REGISTER_EXCEPTION.Exception(e.Error())
+	}
+	log.Info().Msgf("信息注册成功,ID=%d", model.ID)
+	return true, nil
+}
+
+//Update 根据Id修改分组信息
+func (model *IscCapcApiReqResp) Update() (bool, error) {
+	if model.ID == 0 {
+		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
+	}
+	//只更新非零字段
+	result := connetor.Db.Table(model.GetTableName()).Updates(model)
+	if result.Error != nil {
+		log.Warn().Msgf("信息更新异常,%v", result.Error)
+		return false, common.UPDATE_EXCEPTION.Exception(result.Error.Error())
+	}
+	log.Info().Msgf("信息更新成功,ID=%d", model.ID)
+	return true, nil
+}
+
 func (model *IscCapcApiReqResp) Delete() (bool, error) {
 	if model.ApiId == 0 && model.Code == "" {
 		return false, common.BAD_REQUEST.Exception("apiId或code不能同时为空")
 	}
-	db := connetor.Db.Table(model.GetCapcTableName())
+	db := connetor.Db.Table(model.GetTableName())
 	deleteParam := &struct {
 		ApiId int
 		Code  string
@@ -75,7 +101,7 @@ func (model *IscCapcApiReqResp) Delete() (bool, error) {
 		model.ApiId,
 		model.Code,
 	}
-	result := db.Delete(deleteParam)
+	result := db.Where(deleteParam).Delete(&IscCapcApiReqResp{})
 	if err := result.Error; err != nil {
 		return false, common.DELETE_EXCEPTION.Exception(err.Error())
 	}

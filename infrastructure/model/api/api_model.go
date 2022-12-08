@@ -4,6 +4,7 @@ import (
 	"github.com/kuchensheng/capc/infrastructure/common"
 	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"math/rand"
 	"strings"
@@ -78,7 +79,7 @@ func (model *IscCapcApiInfo) Valid() error {
 	return nil
 }
 
-func (model *IscCapcApiInfo) GetCapcTableName() string {
+func (model *IscCapcApiInfo) GetTableName() string {
 	return tableName
 }
 
@@ -91,16 +92,43 @@ func (model *IscCapcApiInfo) BeforeCreate(tx *gorm.DB) error {
 	return model.Valid()
 }
 
+func (model *IscCapcApiInfo) Create() (bool, error) {
+	result := connetor.Db.Table(model.GetTableName()).Create(model)
+	if e := result.Error; e != nil {
+		log.Warn().Msgf("信息注册异常,%v", e)
+		return false, common.REGISTER_EXCEPTION.Exception(e.Error())
+	}
+	log.Info().Msgf("信息注册成功,ID=%d", model.ID)
+	return true, nil
+}
+
+//Update 根据Id修改分组信息
+func (model *IscCapcApiInfo) Update() (bool, error) {
+	if model.ID == 0 {
+		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
+	}
+	//只更新非零字段
+	result := connetor.Db.Table(model.GetTableName()).Updates(model)
+	if result.Error != nil {
+		log.Warn().Msgf("信息更新异常,%v", result.Error)
+		return false, common.UPDATE_EXCEPTION.Exception(result.Error.Error())
+	}
+	log.Info().Msgf("信息更新成功,ID=%d", model.ID)
+	return true, nil
+}
+
 func (model *IscCapcApiInfo) Delete() (bool, error) {
-	if model.ID != 0 {
-		return model.BaseModel.Delete()
+	if model.ID == 0 {
+		return false, common.ID_IS_NULL.Exception(nil)
 	}
-	if model.Code != "" {
-		result := connetor.Db.Table(tableName).Where("code = ?", model.Code).Delete(&IscCapcApiInfo{})
-		if e := result.Error; e != nil {
-			return false, e
-		}
+	db := connetor.Db.Table(model.GetTableName())
+	db.Where("id = ?", model.ID)
+	result := db.Delete(model)
+	if e := result.Error; e != nil {
+		log.Warn().Msgf("信息删除异常,%v", e)
+		return false, common.DELETE_EXCEPTION.Exception(e.Error())
 	}
+	log.Info().Msgf("信息删除成功,ID=%d", model.ID)
 	return true, nil
 }
 

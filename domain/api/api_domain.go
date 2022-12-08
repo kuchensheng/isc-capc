@@ -1,9 +1,9 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/kuchensheng/capc/domain"
 	"github.com/kuchensheng/capc/infrastructure/common"
 	"github.com/kuchensheng/capc/infrastructure/model/api"
 	"github.com/kuchensheng/capc/infrastructure/model/category"
@@ -14,7 +14,7 @@ import (
 )
 
 var ApiDomain = func(context *gin.Context) *apiDomain {
-	return &apiDomain{context, context.GetString(domain.TENANTID)}
+	return &apiDomain{context, context.GetString(common.TENANTID)}
 }
 
 type apiDomain struct {
@@ -27,7 +27,7 @@ func (domain *apiDomain) RegisterApi() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	_, err = op.Create()
+	_, err = op.Create(domain.Context)
 	return op.Api.ID, err
 }
 
@@ -36,7 +36,7 @@ func (domain *apiDomain) UpdateApi() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return op.Update()
+	return op.Update(domain.Context)
 }
 
 func (domain *apiDomain) DeleteApi() (bool, error) {
@@ -57,7 +57,7 @@ func (domain *apiDomain) DeleteApi() (bool, error) {
 	op.Api.Code = code
 	op.Parameter.ApiId = intId
 	op.Parameter.Code = code
-	return op.Delete()
+	return op.Delete(domain.Context)
 }
 
 func (domain *apiDomain) buildOperation() (*api.ApiOperationRepository, error) {
@@ -65,11 +65,11 @@ func (domain *apiDomain) buildOperation() (*api.ApiOperationRepository, error) {
 	if err := domain.Context.BindJSON(dto); err != nil {
 		return nil, err
 	}
-	if _, ok := domain.CheckExisted(dto.Code); ok {
-		return nil, common.API_CODE_EXISTS.Exception(nil)
+	if _, ok := domain.CheckExisted(dto.Code, domain.Context); ok {
+		return nil, common.API_CODE_EXISTS.Exception(dto.Code)
 	}
-	if _, ok := domain.CheckCategory(dto.CategoryId); !ok {
-		return nil, common.API_CATEGORY_IS_NULL.Exception(nil)
+	if _, ok := domain.CheckCategory(dto.CategoryId, domain.Context); !ok {
+		return nil, common.CATEGORY_UNKNOWN_PARENT.Exception(nil)
 	}
 	if !dto.Import && dto.Type == category2.OS.GetName() {
 		return nil, common.NOT_ALLOW.Exception("不允许创建OS类型的api")
@@ -86,10 +86,10 @@ func (domain *apiDomain) buildOperation() (*api.ApiOperationRepository, error) {
 	return op, nil
 }
 
-func (domain *apiDomain) CheckExisted(code string) (api.IscCapcApiInfo, bool) {
-	return api.ApiRepository.GetOne(api2.DetailVO{Code: code})
+func (domain *apiDomain) CheckExisted(code string, context context.Context) (api.IscCapcApiInfo, bool) {
+	return api.ApiRepository.GetOne(api2.DetailVO{Code: code}, context)
 }
 
-func (domain *apiDomain) CheckCategory(categoryId int) (category.IscCapcCategory, bool) {
-	return category.CategoryRepository.GetDetail(categoryId, "")
+func (domain *apiDomain) CheckCategory(categoryId int, context context.Context) (category.IscCapcCategory, bool) {
+	return category.CategoryRepository.GetDetail(categoryId, "", context)
 }

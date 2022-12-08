@@ -1,6 +1,7 @@
 package category
 
 import (
+	"context"
 	"github.com/kuchensheng/capc/infrastructure/common"
 	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
@@ -16,12 +17,12 @@ type categoryRepository struct {
 	model.BaseRepository
 }
 
-func (repository *categoryRepository) GetDB() *gorm.DB {
-	return repository.BaseRepository.GetDB()
+func (repository *categoryRepository) GetDB(context context.Context) *gorm.DB {
+	return repository.BaseRepository.GetDB(context)
 }
 
-func (repository *categoryRepository) GetAllApp(dto category.SearchVO) ([]IscCapcCategory, error) {
-	db := repository.GetDB().Where("parent_id = ?", dto.ParentId)
+func (repository *categoryRepository) GetAllApp(dto category.SearchVO, context context.Context) ([]IscCapcCategory, error) {
+	db := repository.GetDB(context).Where("parent_id = ?", dto.ParentId)
 	if dto.Name != "" && strings.Trim(dto.Name, " ") != "" {
 		db = db.Where("name LIKE ?", "%"+dto.Name+"%")
 	}
@@ -56,12 +57,12 @@ func (repository *categoryRepository) GetAllApp(dto category.SearchVO) ([]IscCap
 
 }
 
-func (repository *categoryRepository) GetDetail(categoryId int, code string) (IscCapcCategory, bool) {
-	c, f := IscCapcCategory{}, false
+func (repository *categoryRepository) GetDetail(categoryId int, code string, context context.Context) (IscCapcCategory, bool) {
+	c, f := *NewIscCapcCategory(), false
 	if categoryId == 0 && code == "" {
 		return c, f
 	}
-	db := repository.GetDB()
+	db := repository.GetDB(context)
 	if categoryId != 0 {
 		db = db.Where("id = ?", categoryId)
 	}
