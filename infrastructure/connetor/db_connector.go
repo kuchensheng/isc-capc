@@ -16,3 +16,7 @@ type Connector interface {
 func GetDB(ctx context.Context) *gorm.DB {
 	return gormDB.WithContext(ctx).Where("tenant_id = ?", ctx.Value(common.TENANTID))
 }
+
+func GetDBWithTable(ctx context.Context, tableName string) *gorm.DB {
+	return gormDB.WithContext(ctx).Where("tenant_id = ?", ctx.Value(common.TENANTID)).Table(tableName)
+}

@@ -93,8 +93,11 @@ func (model *IscCapcApiInfo) BeforeCreate(tx *gorm.DB) error {
 	return model.Valid()
 }
 
-func (model *IscCapcApiInfo) Create(ctx context.Context) (bool, error) {
-	result := connetor.GetDB(ctx).Table(model.GetTableName()).Create(model)
+func (model *IscCapcApiInfo) Create(ctx context.Context, db *gorm.DB) (bool, error) {
+	if db == nil {
+		db = connetor.GetDBWithTable(ctx, model.GetTableName())
+	}
+	result := db.Create(model)
 	if e := result.Error; e != nil {
 		log.Warn().Msgf("信息注册异常,%v", e)
 		return false, common.REGISTER_EXCEPTION.Exception(e.Error())
@@ -104,12 +107,16 @@ func (model *IscCapcApiInfo) Create(ctx context.Context) (bool, error) {
 }
 
 //Update 根据Id修改分组信息
-func (model *IscCapcApiInfo) Update(ctx context.Context) (bool, error) {
+func (model *IscCapcApiInfo) Update(ctx context.Context, db *gorm.DB) (bool, error) {
 	if model.ID == 0 {
 		return false, common.CATEGORY_ID_ISNULL.Exception(nil)
 	}
+	if db == nil {
+		db = connetor.GetDBWithTable(ctx, model.GetTableName())
+	}
+
 	//只更新非零字段
-	result := connetor.GetDB(ctx).Table(model.GetTableName()).Updates(model)
+	result := db.Updates(model)
 	if result.Error != nil {
 		log.Warn().Msgf("信息更新异常,%v", result.Error)
 		return false, common.UPDATE_EXCEPTION.Exception(result.Error.Error())
@@ -118,11 +125,15 @@ func (model *IscCapcApiInfo) Update(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
-func (model *IscCapcApiInfo) Delete(ctx context.Context) (bool, error) {
+func (model *IscCapcApiInfo) Delete(ctx context.Context, db *gorm.DB) (bool, error) {
 	if model.ID == 0 {
 		return false, common.ID_IS_NULL.Exception(nil)
 	}
-	db := connetor.GetDB(ctx).Table(model.GetTableName())
+
+	if db == nil {
+		db = connetor.GetDBWithTable(ctx, model.GetTableName())
+	}
+
 	db.Where("id = ?", model.ID)
 	result := db.Delete(model)
 	if e := result.Error; e != nil {

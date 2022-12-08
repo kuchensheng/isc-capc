@@ -31,5 +31,11 @@ func (handler *categoryHandler) InitView() {
 				return category.CategoryDomain(context).GetAllApp()
 			})
 		})
+		//删除应用或分组
+		g.DELETE("/del/:id", func(context *gin.Context) {
+			handlerBusiness(context, func(context *gin.Context) (any, error) {
+				return category.CategoryDomain(context).DeleteCategory()
+			})
+		})
 	}
 }

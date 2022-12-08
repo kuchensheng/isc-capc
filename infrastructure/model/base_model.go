@@ -29,9 +29,9 @@ func (model *BaseModel) SetTenantId(tenantId string) {
 type OptionInterface interface {
 	GetTableName() string
 
-	Create(ctx context.Context) (bool, error)
-	Update(ctx context.Context) (bool, error)
-	Delete(ctx context.Context) (bool, error)
+	Create(ctx context.Context, tx *gorm.DB) (bool, error)
+	Update(ctx context.Context, tx *gorm.DB) (bool, error)
+	Delete(ctx context.Context, tx *gorm.DB) (bool, error)
 }
 
 func (model *BaseModel) BeforeCreate(tx *gorm.DB) error {

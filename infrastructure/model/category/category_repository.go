@@ -20,6 +20,11 @@ func (repository *categoryRepository) GetDB(context context.Context) *gorm.DB {
 	return repository.BaseRepository.GetDB(context).Table(tableName)
 }
 
+func (repository *categoryRepository) DeleteBatch(dto category.SearchVO, ctx context.Context) error {
+	result := repository.GetDB(ctx).Delete(NewIscCapcCategory(), dto.Ids)
+	return result.Error
+}
+
 func (repository *categoryRepository) GetAllApp(dto category.SearchVO, context context.Context) ([]IscCapcCategory, error) {
 	db := repository.GetDB(context).Where("parent_id = ?", dto.ParentId)
 	if dto.Name != "" && strings.Trim(dto.Name, " ") != "" {
