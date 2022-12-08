@@ -128,6 +128,10 @@ func (model *IscCapcApiInfo) Delete() (bool, error) {
 		log.Warn().Msgf("信息删除异常,%v", e)
 		return false, common.DELETE_EXCEPTION.Exception(e.Error())
 	}
+	if result.RowsAffected < 1 {
+		log.Warn().Msgf("api信息不存在")
+		return false, common.API_NOT_EXISTS.Exception(nil)
+	}
 	log.Info().Msgf("信息删除成功,ID=%d", model.ID)
 	return true, nil
 }

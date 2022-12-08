@@ -20,7 +20,7 @@ func (repository *ApiOperationRepository) GetDB(context context.Context) *gorm.D
 
 //Create 创建API信息
 func (op *ApiOperationRepository) Create(ctx context.Context) (bool, error) {
-	tx := op.GetDB(ctx)
+	tx := op.GetDB(ctx).Begin()
 	defer func() {
 		if x := recover(); x != nil {
 			log.Error().Msgf("无法创建API信息，%v", x)
@@ -32,6 +32,8 @@ func (op *ApiOperationRepository) Create(ctx context.Context) (bool, error) {
 		tx.Rollback()
 		return ok, err
 	}
+	op.Parameter.ApiId = op.Api.ID
+	op.Parameter.Code = op.Api.Code
 	if op.Parameter != nil {
 		log.Info().Msgf("保存或更新API参数信息")
 		if ok, err := op.saveOrUpdateParameter(ctx); !ok || err != nil {
@@ -45,7 +47,7 @@ func (op *ApiOperationRepository) Create(ctx context.Context) (bool, error) {
 
 //Update 更新API信息
 func (op *ApiOperationRepository) Update(ctx context.Context) (bool, error) {
-	tx := op.GetDB(ctx)
+	tx := op.GetDB(ctx).Begin()
 	defer func() {
 		if x := recover(); x != nil {
 			tx.Rollback()
@@ -57,6 +59,8 @@ func (op *ApiOperationRepository) Update(ctx context.Context) (bool, error) {
 		return ok, err
 	}
 	log.Info().Msgf("保存或更新API参数信息...")
+	op.Parameter.ApiId = op.Api.ID
+	op.Parameter.Code = op.Api.Code
 	if op.Parameter != nil {
 		if ok, err := op.saveOrUpdateParameter(ctx); !ok || err != nil {
 			tx.Rollback()
@@ -69,7 +73,7 @@ func (op *ApiOperationRepository) Update(ctx context.Context) (bool, error) {
 
 //Delete 删除API信息
 func (op *ApiOperationRepository) Delete(ctx context.Context) (bool, error) {
-	tx := op.GetDB(ctx)
+	tx := op.GetDB(ctx).Begin()
 	defer func() {
 		if x := recover(); x != nil {
 			tx.Rollback()
@@ -80,6 +84,8 @@ func (op *ApiOperationRepository) Delete(ctx context.Context) (bool, error) {
 		tx.Rollback()
 		return ok, err
 	}
+	op.Parameter.ApiId = op.Api.ID
+	op.Parameter.Code = op.Api.Code
 	if op.Parameter != nil {
 		log.Info().Msgf("删除API参数信息")
 		if ok, err := op.Parameter.Delete(); !ok || err != nil {
