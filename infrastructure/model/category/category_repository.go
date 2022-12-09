@@ -21,6 +21,22 @@ func (repository *categoryRepository) GetDB(context context.Context) *gorm.DB {
 }
 
 func (repository *categoryRepository) DeleteBatch(dto category.SearchVO, ctx context.Context) error {
+	tx := repository.GetDB(ctx).Begin()
+	defer func() {
+		if x := recover(); x != nil {
+			log.Warn().Msgf("发生未知异常,%v", x)
+			tx.Rollback()
+		}
+	}()
+	log.Info().Msgf("批量删除分组信息:%v", dto.Ids)
+	if result := tx.Delete(NewIscCapcCategory(), dto.Ids); result.Error != nil {
+		log.Warn().Msgf("无法删除分组信息，%v", result.Error)
+		tx.Rollback()
+		return result.Error
+	} else {
+		log.Info().Msgf("批量删除API信息")
+	}
+
 	result := repository.GetDB(ctx).Delete(NewIscCapcCategory(), dto.Ids)
 	return result.Error
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/kuchensheng/capc/infrastructure/common"
 	"github.com/kuchensheng/capc/infrastructure/connetor"
 	"github.com/kuchensheng/capc/infrastructure/model"
+	"github.com/kuchensheng/capc/infrastructure/vo/api"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"math/rand"
@@ -146,6 +147,24 @@ func (model *IscCapcApiInfo) Delete(ctx context.Context, db *gorm.DB) (bool, err
 	}
 	log.Info().Msgf("信息删除成功,ID=%d", model.ID)
 	return true, nil
+}
+
+func (model *IscCapcApiInfo) DeleteBatch(ctx context.Context, db *gorm.DB, search api.SearchVO) (bool, error) {
+	if db == nil {
+		db = connetor.GetDBWithTable(ctx, model.GetTableName())
+	}
+	condition := struct {
+		Summary string
+		Path    string
+		Type    []int
+		Id      []int
+		Code    []string
+		Method  []string
+	}{
+		search.Name, search.Path, search.Types, search.Ids, search.Codes, search.Methods,
+	}
+	result := db.Delete(condition)
+	return result.Error == nil, result.Error
 }
 
 var _VERSION = "1.0.0"

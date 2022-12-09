@@ -3,9 +3,11 @@ package api
 type SearchVO struct {
 	Name        string   `json:"name"`
 	Path        string   `json:"path"`
-	Method      []string `json:"method"`
-	Code        string   `json:"code"`
+	Methods     []string `json:"methods"`
+	Codes       []string `json:"codes"`
 	CategoryIds []int    `json:"categoryIds"`
+	Ids         []int    `json:"ids"`
+	Types       []int    `json:"types"`
 }
 
 type DetailVO struct {

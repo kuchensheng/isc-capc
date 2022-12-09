@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"github.com/kuchensheng/capc/infrastructure/model"
+	"github.com/kuchensheng/capc/infrastructure/vo/api"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
@@ -12,6 +13,7 @@ type ApiOperationRepository struct {
 	Api        *IscCapcApiInfo
 	Repository *apiParameterRepository
 	Parameter  *IscCapcApiReqResp
+	SearchVo   api.SearchVO
 }
 
 func (repository *ApiOperationRepository) GetDB(context context.Context) *gorm.DB {
@@ -95,6 +97,22 @@ func (op *ApiOperationRepository) Delete(ctx context.Context) (bool, error) {
 	}
 
 	tx.Commit()
+	return true, nil
+}
+
+//DeleteBatch 批量删除API信息
+func (op *ApiOperationRepository) DeleteBatch(ctx context.Context) (bool, error) {
+	tx := op.GetDB(ctx).Begin()
+	defer func() {
+		if x := recover(); x != nil {
+			tx.Rollback()
+		}
+	}()
+	log.Info().Msgf("删除API信息...")
+	//todo 还未完成
+	if op.SearchVo.Ids != nil {
+		return op.Api.DeleteBatch(ctx, tx, op.SearchVo)
+	}
 	return true, nil
 }
 
